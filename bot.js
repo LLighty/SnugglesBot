@@ -13,7 +13,7 @@ client.on("ready", () => {
 client.on("message", (message) => {
 
 });
-
+ 
 function generateFluffyPic(){
   var image = "f";
   var res;
