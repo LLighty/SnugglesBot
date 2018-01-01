@@ -1,0 +1,14 @@
+{
+  "name": "flufflesbot",
+  "version": "1.0.0",
+  "description": "Fluffy Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Liam Lightfoot",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.2.1"
+  }
+}
