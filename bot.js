@@ -1,19 +1,20 @@
 const Discord = require("discord.js");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
+const funct = require("./functions");
 const client = new Discord.Client();
+
 const timeout = 6000 * 1;
 const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/Floof.json', 'https://www.reddit.com/r/tippytaps.json'];
 
-
 client.on("ready", () => {
   console.log("I am ready!");
-  setInterval(generateFluffyPic, timeout);
+  //setInterval(generateFluffyPic, timeout);
 });
 
 client.on("message", (message) => {
 
 });
- 
+
 function generateFluffyPic(){
   var image = "f";
   var res;
@@ -31,9 +32,9 @@ function generateFluffyPic(){
 .then(function(res){
   showFluffyPic(res[Math.floor(Math.random() * (res.length - 0))].imgur);
 })
-.catch(function(err)){
+.catch(function(err){
   console.log('Fetch Error :-S', err);
-}
+})
   //console.log(image);
 }
 
@@ -42,7 +43,7 @@ function showFluffyPic(imgLocation){
   if(imgLocation.indexOf("http") !== -1){
     console.log("Sending image");
     console.log(imgLocation);
-    client.channels.get('397211084534186006').send(imgLocation);
+    //client.channels.get('397211084534186006').send(imgLocation);
   } else{
     generateFluffyPic();
   }
