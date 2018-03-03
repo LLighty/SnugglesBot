@@ -1,3 +1,11 @@
+/*
+  * Discord Bot created for recreational purposes
+  * Liam Lightfoot
+
+*/
+
+
+
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const funct = require("./functions");
@@ -6,17 +14,40 @@ const client = new Discord.Client();
 const timeout = 6000 * 1;
 const reddit = ['https://www.reddit.com/r/fluffy/top.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json'];
 
+var prefix = "!";
+
 client.on("ready", () => {
   console.log("I am ready!");
   //setInterval(generateFluffyPic, timeout);
 });
 
 client.on("message", (message) => {
-    if(message == "!generateFluffy"){
+    if(message == prefix + "generateFluffy"){
       console.log("Generating Fluffy Picture")
       generateFluffyPic();
     }
+
+    if(message == prefix + "getQuotes"){
+      client.channels.get('261789412881465344').fetchMessages()
+        .then(messages => selectAQuote(messages.array(), message))
+        .catch(console.error);
+    }
 });
+
+function selectAQuote(messages, channel){
+    var content = [];
+
+    messages.forEach(function(elements) {
+      content.push(elements.content);
+    });
+    for(var i = 0; i < content.length; i++){
+      if(!(content[i].includes('-'))){
+        content.splice(i, 1);
+      }
+    }
+
+    channel.channel.send(content[Math.floor(Math.random() * content.length)]);
+}
 
 function generateFluffyPic(){
   var image = "f";
