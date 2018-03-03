@@ -12,7 +12,7 @@ const funct = require("./functions");
 const client = new Discord.Client();
 
 const timeout = 6000 * 1;
-const reddit = ['https://www.reddit.com/r/fluffy/top.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json'];
+const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json'];
 
 var prefix = "!";
 
@@ -65,7 +65,12 @@ function generateFluffyPic(){
   sub: post.data.subreddit
 })))
 .then(function(res){
-  var random = Math.floor(Math.random() * (3 - 0));
+  var random;
+  if(res.length < 3){
+    random = Math.floor(Math.random() * (res.length - 0));
+  } else{
+    random = Math.floor(Math.random() * (3 - 0));
+  }
   showFluffyPic(res[random].imgur, res[random].sub);
 })
 .catch(function(err){
