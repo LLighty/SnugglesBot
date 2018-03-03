@@ -4,7 +4,7 @@ const funct = require("./functions");
 const client = new Discord.Client();
 
 const timeout = 6000 * 1;
-const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/Floof.json', 'https://www.reddit.com/r/tippytaps.json'];
+const reddit = ['https://www.reddit.com/r/fluffy/top.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json'];
 
 client.on("ready", () => {
   console.log("I am ready!");
@@ -12,7 +12,10 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
-
+    if(message == "!generateFluffy"){
+      console.log("Generating Fluffy Picture")
+      generateFluffyPic();
+    }
 });
 
 function generateFluffyPic(){
@@ -27,10 +30,12 @@ function generateFluffyPic(){
   link: post.data.url,
   img: post.data.thumbnail,
   imgur: post.data.url,
-  title: post.data.title
+  title: post.data.title,
+  sub: post.data.subreddit
 })))
 .then(function(res){
-  showFluffyPic(res[Math.floor(Math.random() * (res.length - 0))].imgur);
+  var random = Math.floor(Math.random() * (3 - 0));
+  showFluffyPic(res[random].imgur, res[random].sub);
 })
 .catch(function(err){
   console.log('Fetch Error :-S', err);
@@ -38,12 +43,13 @@ function generateFluffyPic(){
   //console.log(image);
 }
 
-function showFluffyPic(imgLocation){
+function showFluffyPic(imgLocation, subreddit){
   console.log(imgLocation);
   if(imgLocation.indexOf("http") !== -1){
     console.log("Sending image");
     console.log(imgLocation);
-    //client.channels.get('397211084534186006').send(imgLocation);
+    client.channels.get('397211084534186006').send("Top post from the " + subreddit + " subreddit.");
+    client.channels.get('397211084534186006').send(imgLocation);
   } else{
     generateFluffyPic();
   }
