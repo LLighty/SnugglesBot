@@ -38,11 +38,17 @@ function selectAQuote(messages, channel){
     messages.forEach(function(elements) {
       content.push(elements.content);
     });
-    for(var i = 0; i < content.length; i++){
-      if(!(content[i].includes('-'))){
+
+    console.log(content.length);
+    for(var i = content.length - 1;  i >= 0; i--){
+      if(content[i].charAt(0) != '"'){
+        console.log("Removing: " + content[i]);
         content.splice(i, 1);
       }
     }
+
+    console.log(content.length);
+    console.log(content);
 
     channel.channel.send(content[Math.floor(Math.random() * content.length)]);
 }
