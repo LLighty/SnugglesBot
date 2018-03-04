@@ -4,21 +4,19 @@
 
 */
 
-
-
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const funct = require("./functions");
 const client = new Discord.Client();
 
-const timeout = 6000 * 1;
+const timeout = 60 * 1;
 const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json', 'https://www.reddit.com/r/awwgifs.json', 'https://www.reddit.com/r/kittengifs/.json'];
 
 var prefix = "!";
 
 client.on("ready", () => {
   console.log("I am ready!");
-  //setInterval(generateFluffyPic, timeout);
+  setInterval(generateFluffyPic, timeout);
 });
 
 client.on("message", (message) => {
@@ -66,8 +64,8 @@ function generateFluffyPic(){
 })))
 .then(function(res){
   var random;
-  if(res.length < 10){
-    random = Math.floor(Math.random() * (res.length - 0));
+  if(res.size < 10){
+    random = Math.floor(Math.random() * (res.size - 0));
   } else{
     random = Math.floor(Math.random() * (10 - 0));
   }
@@ -84,8 +82,8 @@ function showFluffyPic(imgLocation, subreddit){
   if(imgLocation.indexOf("http") !== -1){
     console.log("Sending image");
     console.log(imgLocation);
-    client.channels.get('397211084534186006').send("Top post from the " + subreddit + " subreddit.");
-    client.channels.get('397211084534186006').send(imgLocation);
+    client.channels.get('282475555276849152').send("Top post from the " + subreddit + " subreddit.");
+    client.channels.get('282475555276849152').send(imgLocation);
   } else{
     generateFluffyPic();
   }
