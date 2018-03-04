@@ -16,7 +16,7 @@ var prefix = "!";
 
 client.on("ready", () => {
   console.log("I am ready!");
-  setInterval(generateFluffyPic, timeout);
+  //setInterval(generateFluffyPic, timeout);
 });
 
 client.on("message", (message) => {
@@ -82,8 +82,8 @@ function showFluffyPic(imgLocation, subreddit){
   if(imgLocation.indexOf("http") !== -1){
     console.log("Sending image");
     console.log(imgLocation);
-    client.channels.get('282475555276849152').send("Top post from the " + subreddit + " subreddit.");
-    client.channels.get('282475555276849152').send(imgLocation);
+    client.channels.get('397211084534186006').send("Top post from the " + subreddit + " subreddit.");
+    client.channels.get('397211084534186006').send(imgLocation);
   } else{
     generateFluffyPic();
   }
