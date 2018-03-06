@@ -3,7 +3,6 @@
   * Liam Lightfoot
 
 */
-
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const funct = require("./functions");
@@ -16,6 +15,7 @@ var prefix = "!";
 
 client.on("ready", () => {
   console.log("I am ready!");
+  client.channel.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
 });
 
@@ -28,6 +28,12 @@ client.on("message", (message) => {
     if(message == prefix + "getQuotes"){
       client.channels.get('261789412881465344').fetchMessages()
         .then(messages => selectAQuote(messages.array(), message))
+        .catch(console.error);
+    }
+
+    if(message == prefix + "getAttachments"){
+      client.channels.get(message.channel.id).fetchMessages()
+        .then(messages => getAttachments(messages.array(), message))
         .catch(console.error);
     }
 });
@@ -93,6 +99,27 @@ function showFluffyPic(imgLocation, subreddit){
   } else{
     generateFluffyPic();
   }
+}
+
+function getAttachments(messages, channel){
+  var attachments = [];
+  var links = [];
+  messages.forEach(function(element){
+    if(element.attachments.size > 0){
+      attachments.push(element.attachments);
+    }
+  })
+  attachments.forEach(function(elements){
+    links.push(elements.url);
+  })
+
+  console.log(attachments);
+  console.log(links);
+  console.log("Check");
+}
+
+function testHTMLImage(imgsrc){
+  return false;
 }
 
 
