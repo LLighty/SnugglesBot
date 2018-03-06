@@ -15,11 +15,11 @@ var prefix = "!";
 
 client.on("ready", () => {
   console.log("I am ready!");
-  client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
+  //client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
 });
 
-client.on("disconnect", () =>{
+client.on("disconnect", (eventClose) =>{
   client.channels.get('252327662482096128').send("Fluffy Bot going Offline!");
 });
 
@@ -30,15 +30,22 @@ client.on("message", (message) => {
     }
 
     if(message == prefix + "getQuotes"){
-      client.channels.get('261789412881465344').fetchMessages()
+      client.channels.get('261789412881465344').fetchMessages({limit: 200})
         .then(messages => selectAQuote(messages.array(), message))
         .catch(console.error);
     }
 
-    if(message == prefix + "getAttachments"){
-      client.channels.get(message.channel.id).fetchMessages()
-        .then(messages => getAttachments(messages.array(), message))
-        .catch(console.error);
+    if(message == prefix + "ff14Meme"){
+      if(message.channel.id == '343020579554852864'){
+        client.channels.get('343020579554852864').fetchMessages({limit: 20})
+          .then(messages => reduceClutter(messages))
+          .catch(console.error);
+        message.channel.send('To reduce meme clutter you cannot use this command in this channel. https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569 \nPlease use this command in any other channel!');
+      }else{
+        client.channels.get('343020579554852864').fetchMessages({limit: 200})
+          .then(messages => getAttachments(messages.array(), message))
+          .catch(console.error);
+      }
     }
 });
 
@@ -113,10 +120,12 @@ function getAttachments(messages, channel){
     if(element.attachments.size > 0){
       attachments.push(element.attachments);
     }
-    if(regHTML.test(element.content)){
+    if(regHTML.test(element.content) && !(element.content.includes("https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569"))){
       links.push(element.content);
     }
-
+    if(element.content.includes("https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569")){
+      element.delete();
+    }
   })
 
   attachments.forEach(function(elements){
@@ -125,12 +134,16 @@ function getAttachments(messages, channel){
 
   console.log(attachments);
   console.log(links);
-  console.log("Check");
+  channel.channel.send(links[Math.floor(Math.random() * links.length)]);
 }
 
-function testHTMLImage(imgsrc){
-  return false;
-}
+function reduceClutter(messages){
+  messages.forEach(function (ele){
+    if(ele.content.includes("https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569")){
+      ele.delete();
+    }
+  })
 
+}
 
 client.login("Mzk3MzEyMjkzNDQyMTU4NTky.DSuLtg.hpm0h5IBWs5c4F5nR5lto9gawFA");
