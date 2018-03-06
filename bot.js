@@ -15,8 +15,12 @@ var prefix = "!";
 
 client.on("ready", () => {
   console.log("I am ready!");
-  client.channel.get('252327662482096128').send("Fluffy Bot is Online!");
+  client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
+});
+
+client.on("disconnect", () =>{
+  client.channels.get('252327662482096128').send("Fluffy Bot going Offline!");
 });
 
 client.on("message", (message) => {
@@ -104,13 +108,19 @@ function showFluffyPic(imgLocation, subreddit){
 function getAttachments(messages, channel){
   var attachments = [];
   var links = [];
+  let regHTML = new RegExp("https:.*");
   messages.forEach(function(element){
     if(element.attachments.size > 0){
       attachments.push(element.attachments);
     }
+    if(regHTML.test(element.content)){
+      links.push(element.content);
+    }
+
   })
+
   attachments.forEach(function(elements){
-    links.push(elements.url);
+    links.push(elements.map(src => src.url));
   })
 
   console.log(attachments);
