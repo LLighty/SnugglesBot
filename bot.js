@@ -174,12 +174,13 @@ function checkGuildContains(user, message){
   var members = [];
   var avatar;
   guildArray.forEach(function (ele){
-    members.push(ele.user.username);
+    members.push({user: ele.user.username, nickname: ele.nickname});
   })
-  if(members.includes(user)){
+
+  if(checkUsers(members,user) || checkNicknames(members, user)){
     console.log("start finding loop");
     guildArray.forEach(function(ele){
-      if(ele.user.username == user){
+      if(ele.user.username == user || ele.nickname == user){
         console.log("checks");
         avatar = ele.user.avatarURL;
       }
@@ -190,11 +191,39 @@ function checkGuildContains(user, message){
   if(avatar != undefined){
     message.channel.send("SUCCESS! We have stolen " + user + "'s Avatar. \n" + avatar);
   } else{
-    message.channel.send("Error, we could not locate the user. Perhaps you entered their nickname?");
+    message.channel.send("Error, we could not locate the user.");
   }
 
 
 }
 
+function checkNicknames(members, user){
+  var nickNames = [];
+  for(var item of members){
+    nickNames.push(item.nickname);
+  }
+  for(var i = 0; i < nickNames.length; i++){
+    if(nickNames[i] == user){
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function checkUsers(members, user){
+  var users = [];
+
+  for(var item of members){
+    users.push(item.user);
+  }
+  for(var i = 0; i < users.length; i++){
+    if(users[i] == user){
+      return true;
+    }
+  }
+
+  return false;
+}
 
 client.login(config.token);
