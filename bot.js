@@ -6,6 +6,7 @@
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const funct = require("./functions");
+const config = require("./package.json");
 const client = new Discord.Client();
 
 const timeout = 60 * 1;
@@ -24,13 +25,25 @@ client.on("disconnect", (eventClose) =>{
 });
 
 client.on("message", (message) => {
+    if(message == prefix + "cleanCommands"){
+      console.log("Removing lines starting with !");
+      message.channel.fetchMessages({limit: 100})
+        .then(messages => removeCommands(messages))
+        .catch(console.error);
+    }
+
+    if(message.content.split("'")[0] == prefix + "stealAvatar "){
+      console.log(message.content.split("'")[1]);
+        checkGuildContains(message.content.split("'")[1], message);
+      }
+
     if(message == prefix + "generateFluffy"){
       console.log("Generating Fluffy Picture")
       generateFluffyPic();
     }
 
     if(message == prefix + "getQuotes"){
-      client.channels.get('261789412881465344').fetchMessages({limit: 200})
+      client.channels.get('261789412881465344').fetchMessages({limit: 100})
         .then(messages => selectAQuote(messages.array(), message))
         .catch(console.error);
     }
@@ -42,12 +55,22 @@ client.on("message", (message) => {
           .catch(console.error);
         message.channel.send('To reduce meme clutter you cannot use this command in this channel. https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569 \nPlease use this command in any other channel!');
       }else{
-        client.channels.get('343020579554852864').fetchMessages({limit: 200})
+        client.channels.get('343020579554852864').fetchMessages({limit: 100})
           .then(messages => getAttachments(messages.array(), message))
           .catch(console.error);
+
+        console.log("Recognised proper channel.")
       }
     }
 });
+
+function removeCommands(messages){
+  messages.forEach(function(ele) {
+      if(ele.content.charAt(0) == prefix){
+        ele.delete();
+      }
+  })
+}
 
 function selectAQuote(messages, channel){
     var content = [];
@@ -146,4 +169,32 @@ function reduceClutter(messages){
 
 }
 
-client.login("Mzk3MzEyMjkzNDQyMTU4NTky.DSuLtg.hpm0h5IBWs5c4F5nR5lto9gawFA");
+function checkGuildContains(user, message){
+  var guildArray = message.guild.members.array();
+  var members = [];
+  var avatar;
+  guildArray.forEach(function (ele){
+    members.push(ele.user.username);
+  })
+  if(members.includes(user)){
+    console.log("start finding loop");
+    guildArray.forEach(function(ele){
+      if(ele.user.username == user){
+        console.log("checks");
+        avatar = ele.user.avatarURL;
+      }
+    })
+  }
+  console.log(avatar);
+
+  if(avatar != undefined){
+    message.channel.send("SUCCESS! We have stolen " + user + "'s Avatar. \n" + avatar);
+  } else{
+    message.channel.send("Error, we could not locate the user. Perhaps you entered their nickname?");
+  }
+
+
+}
+
+
+client.login(config.token);
