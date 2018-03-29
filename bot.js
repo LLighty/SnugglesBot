@@ -5,6 +5,7 @@
 */
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
+const opusscript = require("opusscript");
 const funct = require("./functions");
 const config = require("./package.json");
 const client = new Discord.Client();
@@ -30,6 +31,11 @@ client.on("message", (message) => {
       message.channel.fetchMessages({limit: 100})
         .then(messages => removeCommands(messages))
         .catch(console.error);
+    }
+
+    if(message.content.split(" ")[0] == prefix + "voices"){
+      console.log("Test");
+      voices(message);
     }
 
     if(message.content.split("'")[0] == prefix + "stealAvatar "){
@@ -224,6 +230,50 @@ function checkUsers(members, user){
   }
 
   return false;
+}
+
+function voices(message){
+  var voiceChannel = message.member.voiceChannel;
+  var voiceMsg = message.content.split(" ")[1];
+  var file = getVoiceFile(voiceMsg);
+
+  console.log(file);
+
+  voiceChannel.join().then(connection => {
+    const dispatcher = connection.playFile(file);
+  }).catch(err => {
+    console.log(err);
+    message.channel.send("Are you in a voice channel?");
+  });
+}
+
+function getVoiceFile(message){
+  switch (message) {
+    case "1":
+      return "Sounds\\TS3\\Ed - The spirits have been angered Run.wav";
+      break;
+    case "2":
+      return "Sounds\\TS3\\Ed - You bitch.wav";
+      break;
+    case "3":
+      return "Sounds\\TS3\\Ed- Because I love you...wav";
+      break;
+    case "4":
+      return "Sounds\\TS3\\Ed- Fvck those cvnts.wav";
+      break;
+    case "5":
+      return "Sounds\\TS3\\Ed- Get to the dungeon.wav";
+      break;
+    case "6":
+      return "Sounds\\TS3\\Xen-Alright 3,2,1 lets go.wav";
+      break;
+    case "7":
+      return "Sounds\\TS3\\Xen and Jimmy.wav";
+      break;
+
+    default:
+      return "Couldn't find file";
+  }
 }
 
 client.login(config.token);
