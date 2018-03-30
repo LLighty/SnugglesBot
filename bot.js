@@ -8,14 +8,20 @@ const fetch = require("node-fetch");
 const opusscript = require("opusscript");
 const funct = require("./functions");
 const config = require("./package.json");
+const fs = require("fs");
 const client = new Discord.Client();
 
+const soundQuoteFolder = "./Sounds/TS3/";
 const timeout = 60 * 1;
 const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json', 'https://www.reddit.com/r/awwgifs.json', 'https://www.reddit.com/r/kittengifs/.json'];
 
+var soundQuotes = [];
+var soundQuotesMapped = [];
 var prefix = "!";
 
 client.on("ready", () => {
+  populateSoundQuotes(soundQuoteFolder, soundQuotes);
+  mapSoundQuotes(soundQuotes, soundQuotesMapped);
   console.log("I am ready!");
   //client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
@@ -35,7 +41,7 @@ client.on("message", (message) => {
 
     if(message.content.split(" ")[0] == prefix + "voices"){
       console.log("Test");
-      voices(message);
+      voices(message, soundQuotesMapped, soundQuoteFolder);
     }
 
     if(message.content.split("'")[0] == prefix + "stealAvatar "){
@@ -113,8 +119,8 @@ function generateFluffyPic(){
   imgur: post.data.url,
   title: post.data.title,
   sub: post.data.subreddit
-})))
-.then(function(res){
+  })))
+  .then(function(res){
   var random;
   if(res.size < 10){
     random = Math.floor(Math.random() * (res.size - 0));
@@ -122,8 +128,8 @@ function generateFluffyPic(){
     random = Math.floor(Math.random() * (10 - 0));
   }
   showFluffyPic(res[random].imgur, res[random].sub);
-})
-.catch(function(err){
+  })
+  .catch(function(err){
   console.log('Fetch Error :-S', err);
 })
   //console.log(image);
@@ -232,47 +238,50 @@ function checkUsers(members, user){
   return false;
 }
 
-function voices(message){
+function voices(message, arr, quoteFolder){
+  var helpArr = [];
   var voiceChannel = message.member.voiceChannel;
   var voiceMsg = message.content.split(" ")[1];
-  var file = getVoiceFile(voiceMsg);
+  if(voiceMsg != 'help'){
+    var file = getVoiceFile(voiceMsg, arr, quoteFolder);
 
-  console.log(file);
-
-  voiceChannel.join().then(connection => {
-    const dispatcher = connection.playFile(file);
-  }).catch(err => {
-    console.log(err);
-    message.channel.send("Are you in a voice channel?");
-  });
+    console.log(file);
+    if(file == "File not found"){
+      message.channel.send("Is that a valid voice file? \n Use `![voiceCommand] help` for a list!");
+    } else{
+      voiceChannel.join().then(connection => {
+        const dispatcher = connection.playFile(file);
+      }).catch(err => {
+        console.log(err);
+      });
+    }
+  } else{
+    message.author.send("These are the voice files!");
+    arr.forEach(obj => {
+      helpArr.push(obj.ID + ": " + obj.Location);
+    })
+    message.author.send(helpArr);
+  }
 }
 
-function getVoiceFile(message){
-  switch (message) {
-    case "1":
-      return "Sounds\\TS3\\Ed - The spirits have been angered Run.wav";
-      break;
-    case "2":
-      return "Sounds\\TS3\\Ed - You bitch.wav";
-      break;
-    case "3":
-      return "Sounds\\TS3\\Ed- Because I love you...wav";
-      break;
-    case "4":
-      return "Sounds\\TS3\\Ed- Fvck those cvnts.wav";
-      break;
-    case "5":
-      return "Sounds\\TS3\\Ed- Get to the dungeon.wav";
-      break;
-    case "6":
-      return "Sounds\\TS3\\Xen-Alright 3,2,1 lets go.wav";
-      break;
-    case "7":
-      return "Sounds\\TS3\\Xen and Jimmy.wav";
-      break;
+function getVoiceFile(id, arr, flocation){
+  for(var i = 0; i < arr.length; i++){
+    if(arr[i].ID == id){
+      return flocation + arr[i].Location;
+    }
+  }
+  return "File not found";
+}
 
-    default:
-      return "Couldn't find file";
+function populateSoundQuotes(dir, arr){
+  fs.readdirSync(dir).forEach(file => {
+    arr.push(file);
+  })
+}
+
+function mapSoundQuotes(arr, arrMap){
+  for(var i = 0; i < arr.length; i++){
+    arrMap.push({ID: i, Location: arr[i]});
   }
 }
 
