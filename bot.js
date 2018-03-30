@@ -9,11 +9,12 @@ const opusscript = require("opusscript");
 const funct = require("./functions");
 const config = require("./package.json");
 const fs = require("fs");
+const ttsGoogle = require("google-tts-api");
 const client = new Discord.Client();
 
 const soundQuoteFolder = "./Sounds/TS3/";
 const timeout = 60 * 1;
-const reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json', 'https://www.reddit.com/r/awwgifs.json', 'https://www.reddit.com/r/kittengifs/.json'];
+var reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/aww/top.json', 'https://www.reddit.com/r/tippytaps/top.json', 'https://www.reddit.com/r/awwgifs.json', 'https://www.reddit.com/r/kittengifs/.json'];
 
 var soundQuotes = [];
 var soundQuotesMapped = [];
@@ -23,13 +24,20 @@ client.on("ready", () => {
   populateSoundQuotes(soundQuoteFolder, soundQuotes);
   mapSoundQuotes(soundQuotes, soundQuotesMapped);
   console.log("I am ready!");
+
   //client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
 });
 
 client.on("disconnect", (eventClose) =>{
-  client.channels.get('252327662482096128').send("Fluffy Bot going Offline!");
+
 });
+
+client.on("voiceStateUpdate", (oldmember, newmember) =>{
+  if(newmember.presence != "offline"){
+    announceUser(newmember);
+  }
+})
 
 client.on("message", (message) => {
     if(message == prefix + "cleanCommands"){
@@ -42,6 +50,18 @@ client.on("message", (message) => {
     if(message.content.split(" ")[0] == prefix + "voices"){
       console.log("Test");
       voices(message, soundQuotesMapped, soundQuoteFolder);
+    }
+
+    if(message == prefix + "disconnect"){
+      client.destroy();
+    }
+
+    if(message == prefix + "joinChannel"){
+      try{
+        message.member.voiceChannel.join();
+      } catch(err){
+        console.log(err);
+      }
     }
 
     if(message.content.split("'")[0] == prefix + "stealAvatar "){
@@ -283,6 +303,44 @@ function mapSoundQuotes(arr, arrMap){
   for(var i = 0; i < arr.length; i++){
     arrMap.push({ID: i, Location: arr[i]});
   }
+}
+
+function announceUser(newMember){
+  var botEnabledOnServer = false;
+  var server = newMember.voiceChannel.name;
+  var name = newMember.displayName;
+  var channelVoiceConnection;
+  var botVoiceConnections = client.user.client.voiceConnections;
+  //console.log(botVoiceConnections);
+  botVoiceConnections.forEach(voiceConnection =>{
+    if(voiceConnection.channel.name == server){
+      botEnabledOnServer = true;
+      //console.log(voiceConnection);
+      channelVoiceConnection = voiceConnection;
+    //  console.log(channelVoiceConnection);
+    }
+  })
+  if(botEnabledOnServer){
+    //console.log(channelVoiceConnection);
+    console.log(name + " has joined " + channelVoiceConnection.channel.name);
+
+    ttsGoogle(name + ' has joined your channel', 'en', 1)   // speed normal = 1 (default), slow = 0.24
+    .then(url => {
+      console.log(url); // https://translate.google.com/translate_tts?...
+      fetch(url)
+        .then(res => {
+          const dest = fs.createWriteStream('./greeting.wav');
+          res.body.pipe(dest);
+
+          const dispatcher = channelVoiceConnection.playFile("./greeting.wav");
+        })
+    })
+    .catch(function (err) {
+      console.error(err.stack);
+    });
+  }
+
+
 }
 
 client.login(config.token);
