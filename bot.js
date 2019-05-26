@@ -20,11 +20,12 @@ var soundQuotes = [];
 var soundQuotesMapped = [];
 var prefix = "!";
 
+
 client.on("ready", () => {
   populateSoundQuotes(soundQuoteFolder, soundQuotes);
   mapSoundQuotes(soundQuotes, soundQuotesMapped);
   console.log("I am ready!");
-
+  console.log("I am a bot!");
   //client.channels.get('252327662482096128').send("Fluffy Bot is Online!");
   //setInterval(generateFluffyPic, timeout);
 });
@@ -39,6 +40,7 @@ client.on("voiceStateUpdate", (oldmember, newmember) =>{
   }
 })
 
+//Hooks into discords API for the server and searches messages for specific tokens
 client.on("message", (message) => {
     if(message == prefix + "cleanCommands"){
       console.log("Removing lines starting with !");
@@ -96,6 +98,7 @@ client.on("message", (message) => {
     }
 });
 
+//Removes commands from channel
 function removeCommands(messages){
   messages.forEach(function(ele) {
       if(ele.content.charAt(0) == prefix){
@@ -104,6 +107,7 @@ function removeCommands(messages){
   })
 }
 
+//Option which gets a bunch of quotes from a quotes channel and prints one out at random
 function selectAQuote(messages, channel){
     var content = [];
 
@@ -125,6 +129,8 @@ function selectAQuote(messages, channel){
     channel.channel.send(content[Math.floor(Math.random() * content.length)]);
 }
 
+//Fetches a bunch (10) of fluffy images from the reddit API
+//Maps them to an array then randomly selects one and calls showFluffyPic to display it in channel
 function generateFluffyPic(){
   var image = "f";
   var res;
@@ -155,6 +161,7 @@ function generateFluffyPic(){
   //console.log(image);
 }
 
+//Posts a fluffy pic to the fluffy channel
 function showFluffyPic(imgLocation, subreddit){
   console.log(imgLocation);
   if(imgLocation.indexOf("http") !== -1){
@@ -167,6 +174,9 @@ function showFluffyPic(imgLocation, subreddit){
   }
 }
 
+//Uses RegEX to extract attachments from a channel (imgs, audio files, etc)
+//Pushes any html links into an array so that we can generate the attachment again later
+//Sends a random link to a quotes channel
 function getAttachments(messages, channel){
   var attachments = [];
   var links = [];
@@ -192,15 +202,17 @@ function getAttachments(messages, channel){
   channel.channel.send(links[Math.floor(Math.random() * links.length)]);
 }
 
+//Removes the image posted whenever someone posts a command in the wrong channel
 function reduceClutter(messages){
   messages.forEach(function (ele){
     if(ele.content.includes("https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569")){
       ele.delete();
     }
   })
-
 }
 
+//Enumerates over everyone in the server checking to see if the specified user is in the server
+//If they are we extract the avatarURL such that we can 'steal' it.
 function checkGuildContains(user, message){
   var guildArray = message.guild.members.array();
   var members = [];
@@ -225,10 +237,10 @@ function checkGuildContains(user, message){
   } else{
     message.channel.send("Error, we could not locate the user.");
   }
-
-
 }
 
+//For the checkGuildContains function.
+//Checks to see if the provided username matches any nicknames on the server
 function checkNicknames(members, user){
   var nickNames = [];
   for(var item of members){
@@ -243,6 +255,8 @@ function checkNicknames(members, user){
   return false;
 }
 
+//For the checkGuildContains function.
+//Checks to see if the provided username matches any usernames on the server
 function checkUsers(members, user){
   var users = [];
 
@@ -258,6 +272,7 @@ function checkUsers(members, user){
   return false;
 }
 
+//Plays a voice file from the sounds folder mapped to 0-18
 function voices(message, arr, quoteFolder){
   var helpArr = [];
   var voiceChannel = message.member.voiceChannel;
@@ -284,6 +299,7 @@ function voices(message, arr, quoteFolder){
   }
 }
 
+//Gets the file ID which was mapped against previously
 function getVoiceFile(id, arr, flocation){
   for(var i = 0; i < arr.length; i++){
     if(arr[i].ID == id){
@@ -293,18 +309,22 @@ function getVoiceFile(id, arr, flocation){
   return "File not found";
 }
 
+//pushes the directory for each sound file
 function populateSoundQuotes(dir, arr){
   fs.readdirSync(dir).forEach(file => {
     arr.push(file);
   })
 }
 
+//maps the directory for each sound file
 function mapSoundQuotes(arr, arrMap){
   for(var i = 0; i < arr.length; i++){
     arrMap.push({ID: i, Location: arr[i]});
   }
 }
 
+//Uses googles TTS API to say when a user has joined the channel
+//Bot needs to be in the same channel that the user is joining
 function announceUser(newMember){
   var botEnabledOnServer = false;
   var server = newMember.voiceChannel.name;

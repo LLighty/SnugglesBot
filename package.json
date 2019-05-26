@@ -1,7 +1,7 @@
 {
   "name": "flufflesbot",
   "version": "1.0.0",
-  "token": "Mzk3MzEyMjkzNDQyMTU4NTky.DSuLtg.hpm0h5IBWs5c4F5nR5lto9gawFA",
+  "token": "NDg2ODMxMzMxNTQ5MTE4NDY0.DnE1DQ.gczEhLBuLr5RMJZJRDILDu9HfKc",
   "description": "Fluffy Discord Bot",
   "main": "bot.js",
   "scripts": {
