@@ -10,9 +10,9 @@ Created using (discord.js)[https://github.com/hydrabolt/discord.js]
 
 `npm install youtube-audio-stream`, `npm install --save random-puppy`, `npm -g install ytdl`, `npm install fluent-ffmpeg`, `npm install opusscript`, `npm install node-opus` 
 
-## Discalmer
+## Disclaimer
 
-Memes cannot be awsome without being from it's original memer below is a list of memes and sounds and their found location
+Below are files attributed to other sources.
 
 - Sloppy!: Final Fantasy 14
 - Underwater!: GW2 SacrxSoundBoard
