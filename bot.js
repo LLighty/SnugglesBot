@@ -26,6 +26,9 @@ client.on("ready", () => {
   mapSoundQuotes(soundQuotes, soundQuotesMapped);
   console.log("I am ready!");
   console.log("I am a bot!");
+
+  //console.log(config.fluffies_ID);
+  //console.log(config.fluffies_ID);
   //setInterval(generateFluffyPic, timeout);
 });
 
@@ -67,8 +70,8 @@ client.on("message", (message) => {
 
     if(message.content.split("'")[0] == prefix + "stealAvatar "){
       console.log(message.content.split("'")[1]);
-        checkGuildContains(message.content.split("'")[1], message);
-      }
+      checkGuildContains(message.content.split("'")[1], message);
+    }
 
     if(message == prefix + "generateFluffy"){
       console.log("Generating Fluffy Picture")
@@ -76,19 +79,20 @@ client.on("message", (message) => {
     }
 
     if(message == prefix + "getQuotes"){
-      client.channels.get('').fetchMessages({limit: 100})
+      client.channels.get('261789412881465344').fetchMessages({limit: 100})
         .then(messages => selectAQuote(messages.array(), message))
         .catch(console.error);
     }
 
-    if(message == prefix + "ff14Meme"){
-      if(message.channel.id == ''){
-        client.channels.get('').fetchMessages({limit: 20})
+    if(message == prefix + "randomMeme"){
+      if(message.channel.id == config.memes_ID){
+        client.channels.get('343020579554852864').fetchMessages({limit: 20})
           .then(messages => reduceClutter(messages))
           .catch(console.error);
         message.channel.send('To reduce meme clutter you cannot use this command in this channel. https://tenor.com/view/disney-moana-pig-sad-eyes-gif-7539569 \nPlease use this command in any other channel!');
       }else{
-        client.channels.get('').fetchMessages({limit: 100})
+        console.log("Tests");
+        client.channels.get('343020579554852864').fetchMessages({limit: 100})
           .then(messages => getAttachments(messages.array(), message))
           .catch(console.error);
 
@@ -166,8 +170,8 @@ function showFluffyPic(imgLocation, subreddit){
   if(imgLocation.indexOf("http") !== -1){
     console.log("Sending image");
     console.log(imgLocation);
-    client.channels.get('').send("Top post from the " + subreddit + " subreddit.");
-    client.channels.get('').send(imgLocation);
+    client.channels.get('397211084534186006').send("Top post from the " + subreddit + " subreddit.");
+    client.channels.get('397211084534186006').send(imgLocation);
   } else{
     generateFluffyPic();
   }
