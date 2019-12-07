@@ -7,10 +7,18 @@ const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const opusscript = require("opusscript");
 const funct = require("./functions");
-const config = require("./package.json");
+const config = require("./configuration.json");
 const fs = require("fs");
 const ttsGoogle = require("google-tts-api");
 const client = new Discord.Client();
+
+//Accessing Google Sheets for Raid Times
+var GoogleSpreadsheet = require('google-spreadsheet');
+var async = require('async');
+//Initialise the spreadsheet
+var doc = new GoogleSpreadsheet(config.spreadsheet_ID);
+var sheet;
+var spreadSheetCreds = require('./RaidTimes.json');
 
 const soundQuoteFolder = "./Sounds/TS3/";
 const timeout = 60 * 1;
@@ -18,7 +26,7 @@ var reddit = ['https://www.reddit.com/r/fluffy.json', 'https://www.reddit.com/r/
 
 var soundQuotes = [];
 var soundQuotesMapped = [];
-var prefix = "!";
+var prefix = config.prefix;
 
 
 client.on("ready", () => {
@@ -27,6 +35,13 @@ client.on("ready", () => {
   console.log("I am ready!");
   console.log("I am a bot!");
 
+  //Initialise google spreadsheet to get hooked into for raid times
+  doc.useServiceAccountAuth(spreadSheetCreds, function(err){
+    console.log(doc.isAuthActive());
+    doc.getInfo(function(err, info) {
+      sheet = info.worksheets[0];
+    });
+  });
   //console.log(config.fluffies_ID);
   //console.log(config.fluffies_ID);
   //setInterval(generateFluffyPic, timeout);
@@ -99,6 +114,27 @@ client.on("message", (message) => {
         console.log("Recognised proper channel.")
       }
     }
+
+    if(message == prefix + "raidTimes"){
+      console.log("Testing Raid");
+      sheet.getCells({
+        'min-row': 22,
+        'max-row': 22,
+        'min-col': 3,
+        'max-col': 9,
+        'return-empty': true
+      },
+      function(err, cells){
+        //for(i = 0; i < cells.length; i++){
+        //  console.log(cells[i].value);
+        //}
+        //Create the message to send to the discord channel
+        var raidTimesMessage = "Monday: " + cells[0].value + "\nTuesday: " + cells[1].value + "\nWednesday: " + cells[2].value + "\nThursday: " + cells[3].value
+        + "\nFriday: " + cells[4].value + "\nSaturday: " + cells[5].value + "\nSunday: " + cells[6].value;
+        message.channel.send(raidTimesMessage);
+      });
+    }
+
 });
 
 //Removes commands from channel
@@ -200,8 +236,8 @@ function getAttachments(messages, channel){
     links.push(elements.map(src => src.url));
   })
 
-  console.log(attachments);
-  console.log(links);
+  //console.log(attachments);
+  //console.log(links);
   channel.channel.send(links[Math.floor(Math.random() * links.length)]);
 }
 

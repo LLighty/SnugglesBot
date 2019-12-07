@@ -4,7 +4,7 @@ Created using (discord.js)[https://github.com/hydrabolt/discord.js]
 
 ## Depedencies
 
-`npm install discord.js --save`, `npm install discord.js node-opus --save`, `npm install discord.js opusscript --save`
+`npm install discord.js --save`, `npm install discord.js node-opus --save`, `npm install discord.js opusscript --save`, `npm install google-spreadsheet --save`
 
 `brew install ffmpeg --with-fdk-aac --with-ffplay --with-freetype --with-frei0r --with-libass --with-libvo-aacenc --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-opus --with-rtmpdump --with-schroedinger --with-speex --with-theora --with-tools`
 
